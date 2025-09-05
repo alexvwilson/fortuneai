@@ -35,7 +35,7 @@ export default function PreferencesCard({ preferences }: PreferencesCardProps) {
         theme: theme,
       });
       toast.success("Preferences updated successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to update preferences");
     }
   };

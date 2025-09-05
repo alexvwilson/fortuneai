@@ -181,7 +181,7 @@ export const ScreenReader = {
 // Color contrast utilities
 export const ColorContrast = {
   // Check if color meets WCAG AA contrast requirements
-  getContrastRatio: (color1: string, color2: string): number => {
+  getContrastRatio: (): number => {
     // Simplified contrast ratio calculation
     // In a real implementation, you'd use a proper color contrast library
     return 4.5; // Placeholder - should be calculated properly
@@ -189,11 +189,11 @@ export const ColorContrast = {
 
   // Ensure minimum contrast ratio
   ensureContrast: (
-    foreground: string,
-    background: string,
+    _foreground: string,
+    _background: string,
     ratio: number = 4.5
   ): boolean => {
-    return ColorContrast.getContrastRatio(foreground, background) >= ratio;
+    return ColorContrast.getContrastRatio() >= ratio;
   },
 };
 

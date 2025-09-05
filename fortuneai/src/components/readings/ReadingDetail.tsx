@@ -72,8 +72,8 @@ export function ReadingDetail({ reading }: ReadingDetailProps) {
         .filter((tag) => tag.length > 0);
 
       const result = await updateReading(reading.id, {
-        title: editedTitle || undefined,
-        tags: tagsArray.length > 0 ? tagsArray : undefined,
+        ...(editedTitle && { title: editedTitle }),
+        ...(tagsArray.length > 0 && { tags: tagsArray }),
       });
 
       if (result.success) {

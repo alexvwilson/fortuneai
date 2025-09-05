@@ -157,9 +157,9 @@ export class AppErrorClass extends Error implements AppError {
     this.message = errorMessage;
     this.details = details;
     this.timestamp = new Date();
-    this.userId = context?.userId;
-    this.sessionId = context?.sessionId;
-    this.context = context;
+    if (context?.userId) this.userId = context.userId;
+    if (context?.sessionId) this.sessionId = context.sessionId;
+    if (context) this.context = context as Record<string, unknown>;
     this.severity = severity;
     this.category = category;
 
@@ -176,10 +176,10 @@ export class AppErrorClass extends Error implements AppError {
       message: this.message,
       details: this.details,
       timestamp: this.timestamp,
-      userId: this.userId,
-      sessionId: this.sessionId,
-      stack: this.stack,
-      context: this.context,
+      ...(this.userId && { userId: this.userId }),
+      ...(this.sessionId && { sessionId: this.sessionId }),
+      ...(this.stack && { stack: this.stack }),
+      ...(this.context && { context: this.context }),
     };
   }
 }
@@ -308,8 +308,8 @@ export class ErrorHandler {
         code: ErrorCodes.INTERNAL_ERROR,
         message: error.message || "An unknown error occurred",
         timestamp: new Date(),
-        stack: error.stack,
-        context,
+        ...(error.stack && { stack: error.stack }),
+        ...(context && { context: context as Record<string, unknown> }),
       };
     }
 
@@ -357,16 +357,16 @@ export class ErrorHandler {
   }
 
   // Get errors by category
-  public getErrorsByCategory(_category: ErrorCategory): AppError[] {
-    return this.errorLog.filter((_error) => {
+  public getErrorsByCategory(): AppError[] {
+    return this.errorLog.filter(() => {
       // This would need to be implemented based on your error structure
       return true; // Placeholder
     });
   }
 
   // Get errors by severity
-  public getErrorsBySeverity(_severity: ErrorSeverity): AppError[] {
-    return this.errorLog.filter((_error) => {
+  public getErrorsBySeverity(): AppError[] {
+    return this.errorLog.filter(() => {
       // This would need to be implemented based on your error structure
       return true; // Placeholder
     });
@@ -405,7 +405,7 @@ export const ErrorBoundaryUtils = {
       ErrorCodes.READING_GENERATION_FAILED,
       ErrorCodes.SERVICE_UNAVAILABLE,
     ];
-    return recoverableCodes.includes(error.code as keyof typeof ErrorCodes);
+    return recoverableCodes.includes(error.code as never);
   },
 
   // Get retry delay for error

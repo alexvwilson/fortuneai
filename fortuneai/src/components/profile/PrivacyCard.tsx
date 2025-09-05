@@ -33,7 +33,7 @@ export default function PrivacyCard({ preferences }: PrivacyCardProps) {
         dataSharingEnabled: dataSharing.toString(),
       });
       toast.success("Privacy settings updated successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to update privacy settings");
     }
   };

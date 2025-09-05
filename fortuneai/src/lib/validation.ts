@@ -82,14 +82,14 @@ export interface ValidationResult {
 // Validation function type
 export type ValidationFunction<T = unknown> = (
   value: T,
-  field: string,
+  field?: string,
   data?: Record<string, unknown>
 ) => string | null;
 
 // Core validation functions
 export const Validators = {
   // Required field validator
-  required: (value: unknown, field: string): string | null => {
+  required: (value: unknown, field: string = "Field"): string | null => {
     if (value === null || value === undefined || value === "") {
       return `${field} is required`;
     }
@@ -102,8 +102,8 @@ export const Validators = {
   // Minimum length validator
   minLength:
     (min: number) =>
-    (value: string, field: string): string | null => {
-      if (value && value.length < min) {
+    (value: unknown, field: string = "Field"): string | null => {
+      if (typeof value === "string" && value && value.length < min) {
         return `${field} must be at least ${min} characters long`;
       }
       return null;
@@ -112,8 +112,8 @@ export const Validators = {
   // Maximum length validator
   maxLength:
     (max: number) =>
-    (value: string, field: string): string | null => {
-      if (value && value.length > max) {
+    (value: unknown, field: string = "Field"): string | null => {
+      if (typeof value === "string" && value && value.length > max) {
         return `${field} must be less than ${max} characters long`;
       }
       return null;
@@ -122,24 +122,28 @@ export const Validators = {
   // Pattern validator
   pattern:
     (regex: RegExp, message: string) =>
-    (value: string, field: string): string | null => {
-      if (value && !regex.test(value)) {
+    (value: unknown, field: string = "Field"): string | null => {
+      if (typeof value === "string" && value && !regex.test(value)) {
         return message || `${field} format is invalid`;
       }
       return null;
     },
 
   // Email validator
-  email: (value: string, field: string): string | null => {
-    if (value && !ValidationRules.email.pattern.test(value)) {
+  email: (value: unknown): string | null => {
+    if (
+      typeof value === "string" &&
+      value &&
+      !ValidationRules.email.pattern.test(value)
+    ) {
       return ValidationRules.email.message;
     }
     return null;
   },
 
   // Password strength validator
-  password: (value: string, field: string): string | null => {
-    if (!value) return null;
+  password: (value: unknown): string | null => {
+    if (!value || typeof value !== "string") return null;
 
     const rules = ValidationRules.password;
     if (value.length < rules.minLength) {
@@ -152,8 +156,12 @@ export const Validators = {
   },
 
   // UUID validator
-  uuid: (value: string, field: string): string | null => {
-    if (value && !ValidationRules.uuid.pattern.test(value)) {
+  uuid: (value: unknown): string | null => {
+    if (
+      typeof value === "string" &&
+      value &&
+      !ValidationRules.uuid.pattern.test(value)
+    ) {
       return ValidationRules.uuid.message;
     }
     return null;
@@ -199,7 +207,7 @@ export const Validators = {
   // Custom validator
   custom:
     (validator: (value: unknown) => boolean, message: string) =>
-    (value: unknown, field: string): string | null => {
+    (value: unknown): string | null => {
       if (value && !validator(value)) {
         return message;
       }
@@ -212,77 +220,104 @@ export const FormSchemas = {
   // User registration schema
   userRegistration: {
     firstName: [
-      Validators.required,
-      Validators.minLength(2),
-      Validators.maxLength(50),
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown, field?: string) => Validators.minLength(2)(value, field),
+      (value: unknown, field?: string) => Validators.maxLength(50)(value, field),
     ],
     lastName: [
-      Validators.required,
-      Validators.minLength(2),
-      Validators.maxLength(50),
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown, field?: string) => Validators.minLength(2)(value, field),
+      (value: unknown, field?: string) => Validators.maxLength(50)(value, field),
     ],
-    email: [Validators.required, Validators.email],
-    password: [Validators.required, Validators.password],
+    email: [
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown) => Validators.email(value),
+    ],
+    password: [
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown) => Validators.password(value),
+    ],
   },
 
   // User login schema
   userLogin: {
-    email: [Validators.required, Validators.email],
-    password: [Validators.required],
+    email: [
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown) => Validators.email(value),
+    ],
+    password: [
+      (value: unknown, field?: string) => Validators.required(value, field),
+    ],
   },
 
   // Reading creation schema
   readingCreation: {
-    readingTypeId: [Validators.required, Validators.uuid],
-    prompt: [
-      Validators.required,
-      Validators.minLength(10),
-      Validators.maxLength(1000),
+    readingTypeId: [
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown) => Validators.uuid(value),
     ],
-    title: [Validators.maxLength(100)],
+    prompt: [
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown, field?: string) => Validators.minLength(10)(value, field),
+      (value: unknown, field?: string) => Validators.maxLength(1000)(value, field),
+    ],
+    title: [
+      (value: unknown, field?: string) => Validators.maxLength(100)(value, field),
+    ],
   },
 
   // Reading update schema
   readingUpdate: {
-    title: [Validators.maxLength(100)],
+    title: [
+      (value: unknown, field?: string) => Validators.maxLength(100)(value, field),
+    ],
     isFavorite: [
-      Validators.custom(
+      (value: unknown) => Validators.custom(
         (value: unknown) => typeof value === "boolean",
         "Invalid favorite status"
-      ),
+      )(value),
     ],
     isShareable: [
-      Validators.custom(
+      (value: unknown) => Validators.custom(
         (value: unknown) => typeof value === "boolean",
         "Invalid shareable status"
-      ),
+      )(value),
     ],
   },
 
   // Reading type creation schema
   readingTypeCreation: {
     name: [
-      Validators.required,
-      Validators.minLength(2),
-      Validators.maxLength(100),
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown, field?: string) => Validators.minLength(2)(value, field),
+      (value: unknown, field?: string) => Validators.maxLength(100)(value, field),
     ],
     description: [
-      Validators.required,
-      Validators.minLength(10),
-      Validators.maxLength(500),
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown, field?: string) => Validators.minLength(10)(value, field),
+      (value: unknown, field?: string) => Validators.maxLength(500)(value, field),
     ],
-    icon: [Validators.required, Validators.minLength(1)],
+    icon: [
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown, field?: string) => Validators.minLength(1)(value, field),
+    ],
     category: [
-      Validators.required,
-      Validators.minLength(2),
-      Validators.maxLength(50),
+      (value: unknown, field?: string) => Validators.required(value, field),
+      (value: unknown, field?: string) => Validators.minLength(2)(value, field),
+      (value: unknown, field?: string) => Validators.maxLength(50)(value, field),
     ],
   },
 
   // Profile update schema
   profileUpdate: {
-    firstName: [Validators.minLength(2), Validators.maxLength(50)],
-    lastName: [Validators.minLength(2), Validators.maxLength(50)],
+    firstName: [
+      (value: unknown, field?: string) => Validators.minLength(2)(value, field),
+      (value: unknown, field?: string) => Validators.maxLength(50)(value, field),
+    ],
+    lastName: [
+      (value: unknown, field?: string) => Validators.minLength(2)(value, field),
+      (value: unknown, field?: string) => Validators.maxLength(50)(value, field),
+    ],
   },
 };
 
@@ -319,12 +354,12 @@ export function validateForm<T extends Record<string, unknown>>(
 export const FieldValidation = {
   // Validate email field
   validateEmail: (email: string): string | null => {
-    return Validators.email(email, "Email");
+    return Validators.email(email);
   },
 
   // Validate password field
   validatePassword: (password: string): string | null => {
-    return Validators.password(password, "Password");
+    return Validators.password(password);
   },
 
   // Validate name field
@@ -370,8 +405,8 @@ export const FieldValidation = {
   },
 
   // Validate UUID
-  validateUUID: (uuid: string, fieldName: string = "ID"): string | null => {
-    return Validators.uuid(uuid, fieldName);
+  validateUUID: (uuid: string): string | null => {
+    return Validators.uuid(uuid);
   },
 };
 
@@ -413,7 +448,7 @@ export const ValidationHelpers = {
   // Get first error message
   getFirstError: (result: ValidationResult): string | null => {
     const errors = Object.values(result.errors);
-    return errors.length > 0 ? errors[0] : null;
+    return errors.length > 0 ? errors[0]! : null;
   },
 
   // Get all error messages

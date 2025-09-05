@@ -13,7 +13,11 @@ export async function createReading(data: {
   aiResponse: string;
   title?: string;
   tags?: string[];
-}): Promise<{ success: boolean; readingId?: string; error?: string }> {
+}): Promise<{
+  success: boolean;
+  readingId?: string | undefined;
+  error?: string;
+}> {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -33,7 +37,7 @@ export async function createReading(data: {
       .returning({ id: readings.id });
 
     revalidatePath("/readings");
-    return { success: true, readingId: result[0].id };
+    return { success: true, readingId: result[0]?.id ?? undefined };
   } catch (error) {
     console.error("Error creating reading:", error);
     return { success: false, error: "Failed to save reading" };

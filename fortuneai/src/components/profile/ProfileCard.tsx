@@ -13,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { updateProfile } from "@/app/actions/profile";
 import { toast } from "react-hot-toast";
-import type { UserPreferences } from "@/drizzle/schema";
 
 interface ProfileCardProps {
   user: {
@@ -22,20 +21,19 @@ interface ProfileCardProps {
     lastName: string | null;
     emailAddresses: Array<{ emailAddress: string }>;
   };
-  preferences: UserPreferences | null;
 }
 
-export default function ProfileCard({ user, preferences }: ProfileCardProps) {
+export default function ProfileCard({ user }: ProfileCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [firstName, setFirstName] = useState(user.firstName || "");
   const [lastName, setLastName] = useState(user.lastName || "");
 
   const handleSave = async () => {
     try {
-      await updateProfile({ firstName, lastName });
+      await updateProfile();
       toast.success("Profile updated successfully!");
       setIsEditing(false);
-    } catch (error) {
+    } catch {
       toast.error("Failed to update profile");
     }
   };

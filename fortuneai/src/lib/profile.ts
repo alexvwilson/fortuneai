@@ -29,7 +29,7 @@ export async function createDefaultPreferences(userId: string) {
     .values(defaultPreferences)
     .returning();
 
-  return preferences;
+  return preferences!;
 }
 
 export async function getUserProfileWithPreferences(userId: string) {

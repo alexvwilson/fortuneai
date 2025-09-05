@@ -1,7 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -35,10 +34,10 @@ export default async function ProfilePage() {
       </Card>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <ProfileCard user={user} preferences={preferences} />
+        <ProfileCard user={user} />
         <PreferencesCard preferences={preferences} />
         <PrivacyCard preferences={preferences} />
-        <DataExportCard userId={user.id} />
+        <DataExportCard />
       </div>
     </div>
   );

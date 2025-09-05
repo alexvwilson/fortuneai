@@ -416,7 +416,7 @@ export const AccessibilityTesting = {
   },
 
   // Check color contrast (simplified)
-  checkColorContrast: (_foreground: string, _background: string): boolean => {
+  checkColorContrast: (): boolean => {
     // This is a simplified check - in a real implementation, you'd use a proper contrast ratio library
     return true; // Placeholder
   },

@@ -44,7 +44,7 @@ export function memoize<T extends (...args: unknown[]) => unknown>(
     }
 
     const result = func(...args);
-    cache.set(key, result);
+    cache.set(key, result as ReturnType<T>);
     return result;
   }) as T;
 }
@@ -152,7 +152,12 @@ export const ReactPerformance = {
       nextProps: React.ComponentProps<T>
     ) => boolean
   ): T => {
-    return React.memo(Component, areEqual) as T;
+    return React.memo(
+      Component as React.ComponentType<object>,
+      areEqual as
+        | ((prevProps: object, nextProps: object) => boolean)
+        | undefined
+    ) as unknown as T;
   },
 
   // Callback memoization
@@ -160,11 +165,13 @@ export const ReactPerformance = {
     callback: T,
     deps: React.DependencyList
   ): T => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     return React.useCallback(callback, deps) as T;
   },
 
   // Value memoization
   useMemo: <T>(factory: () => T, deps: React.DependencyList): T => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     return React.useMemo(factory, deps);
   },
 };

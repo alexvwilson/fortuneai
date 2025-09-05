@@ -6,10 +6,7 @@ import { userPreferences } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function updateProfile(data: {
-  firstName?: string;
-  lastName?: string;
-}) {
+export async function updateProfile() {
   const { userId } = await auth();
 
   if (!userId) {

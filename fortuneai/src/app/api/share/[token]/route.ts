@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getReadingByShareToken } from "@/lib/readings";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
   try {

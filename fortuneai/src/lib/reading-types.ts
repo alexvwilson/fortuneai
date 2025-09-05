@@ -130,7 +130,7 @@ export async function getReadingTypeById(readingTypeId: string): Promise<{
       return null;
     }
 
-    const type = result[0];
+    const type = result[0]!;
     return {
       id: type.id,
       name: type.name,

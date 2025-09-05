@@ -134,7 +134,7 @@ export function useResponsiveVisibility() {
 
 // Hook for responsive layout
 export function useResponsiveLayout() {
-  const { isMobile, isTablet, isDesktop } = useResponsive();
+  const { isMobile, isTablet } = useResponsive();
 
   return {
     // Grid columns

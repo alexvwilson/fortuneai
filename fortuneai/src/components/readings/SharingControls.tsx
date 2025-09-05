@@ -28,7 +28,7 @@ export function SharingControls({ reading, onClose }: SharingControlsProps) {
       } else {
         toast.error(result.error || "Failed to generate share link");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to generate share link");
     } finally {
       setIsGenerating(false);

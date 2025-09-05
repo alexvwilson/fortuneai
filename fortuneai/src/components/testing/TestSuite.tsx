@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Validation, ErrorHandling } from "@/lib";
+import { Validation } from "@/lib/validation";
+import { ErrorHandling } from "@/lib/errorHandling";
 
 interface TestResult {
   name: string;
@@ -23,6 +24,99 @@ export function TestSuite({ onComplete, autoRun = false }: TestSuiteProps) {
   const [isRunning, setIsRunning] = useState(false);
   const [currentTest, setCurrentTest] = useState<string | null>(null);
 
+  // Update test status
+  const updateTest = useCallback(
+    (name: string, updates: Partial<TestResult>) => {
+      setTests((prev) =>
+        prev.map((test) =>
+          test.name === name ? { ...test, ...updates } : test
+        )
+      );
+    },
+    []
+  );
+
+  // Run individual test
+  const runTest = useCallback(
+    async (testName: string): Promise<TestResult> => {
+      const startTime = performance.now();
+      updateTest(testName, { status: "running" });
+      setCurrentTest(testName);
+
+      try {
+        let result: TestResult = { name: testName, status: "passed" };
+
+        switch (testName) {
+          case "Validation Utilities":
+            result = await testValidationUtilities();
+            break;
+          case "Error Handling":
+            result = await testErrorHandling();
+            break;
+          case "Responsive Design":
+            result = await testResponsiveDesign();
+            break;
+          case "Accessibility Features":
+            result = await testAccessibilityFeatures();
+            break;
+          case "Performance Metrics":
+            result = await testPerformanceMetrics();
+            break;
+          case "Database Connectivity":
+            result = await testDatabaseConnectivity();
+            break;
+          case "API Integration":
+            result = await testAPIIntegration();
+            break;
+          case "Component Rendering":
+            result = await testComponentRendering();
+            break;
+          default:
+            result = {
+              name: testName,
+              status: "failed",
+              error: "Unknown test",
+            };
+        }
+
+        const endTime = performance.now();
+        result.duration = endTime - startTime;
+
+        updateTest(testName, result);
+        return result;
+      } catch (error) {
+        const endTime = performance.now();
+        const result: TestResult = {
+          name: testName,
+          status: "failed",
+          error: error instanceof Error ? error.message : "Unknown error",
+          duration: endTime - startTime,
+        };
+        updateTest(testName, result);
+        return result;
+      } finally {
+        setCurrentTest(null);
+      }
+    },
+    [updateTest]
+  );
+
+  // Run all tests
+  const runTests = useCallback(async () => {
+    setIsRunning(true);
+    const results: TestResult[] = [];
+
+    for (const test of tests) {
+      if (test.status === "pending") {
+        const result = await runTest(test.name);
+        results.push(result);
+      }
+    }
+
+    setIsRunning(false);
+    onComplete?.(results);
+  }, [tests, onComplete, runTest]);
+
   // Initialize test suite
   useEffect(() => {
     const initialTests: TestResult[] = [
@@ -41,71 +135,6 @@ export function TestSuite({ onComplete, autoRun = false }: TestSuiteProps) {
       runTests();
     }
   }, [autoRun, runTests]);
-
-  // Update test status
-  const updateTest = (name: string, updates: Partial<TestResult>) => {
-    setTests((prev) =>
-      prev.map((test) => (test.name === name ? { ...test, ...updates } : test))
-    );
-  };
-
-  // Run individual test
-  const runTest = async (testName: string): Promise<TestResult> => {
-    const startTime = performance.now();
-    updateTest(testName, { status: "running" });
-    setCurrentTest(testName);
-
-    try {
-      let result: TestResult = { name: testName, status: "passed" };
-
-      switch (testName) {
-        case "Validation Utilities":
-          result = await testValidationUtilities();
-          break;
-        case "Error Handling":
-          result = await testErrorHandling();
-          break;
-        case "Responsive Design":
-          result = await testResponsiveDesign();
-          break;
-        case "Accessibility Features":
-          result = await testAccessibilityFeatures();
-          break;
-        case "Performance Metrics":
-          result = await testPerformanceMetrics();
-          break;
-        case "Database Connectivity":
-          result = await testDatabaseConnectivity();
-          break;
-        case "API Integration":
-          result = await testAPIIntegration();
-          break;
-        case "Component Rendering":
-          result = await testComponentRendering();
-          break;
-        default:
-          result = { name: testName, status: "failed", error: "Unknown test" };
-      }
-
-      const endTime = performance.now();
-      result.duration = endTime - startTime;
-
-      updateTest(testName, result);
-      return result;
-    } catch (error) {
-      const endTime = performance.now();
-      const result: TestResult = {
-        name: testName,
-        status: "failed",
-        error: error instanceof Error ? error.message : "Unknown error",
-        duration: endTime - startTime,
-      };
-      updateTest(testName, result);
-      return result;
-    } finally {
-      setCurrentTest(null);
-    }
-  };
 
   // Test validation utilities
   const testValidationUtilities = async (): Promise<TestResult> => {
@@ -367,22 +396,6 @@ export function TestSuite({ onComplete, autoRun = false }: TestSuiteProps) {
       };
     }
   };
-
-  // Run all tests
-  const runTests = useCallback(async () => {
-    setIsRunning(true);
-    const results: TestResult[] = [];
-
-    for (const test of tests) {
-      if (test.status === "pending") {
-        const result = await runTest(test.name);
-        results.push(result);
-      }
-    }
-
-    setIsRunning(false);
-    onComplete?.(results);
-  }, [tests, onComplete]);
 
   // Get test summary
   const getTestSummary = () => {

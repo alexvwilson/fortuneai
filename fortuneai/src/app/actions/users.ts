@@ -96,10 +96,10 @@ export async function getCurrentUser(): Promise<GetUserResult> {
         .where(eq(users.id, clerkUser.id))
         .limit(1);
 
-      return { success: true, user: newUser[0] };
+      return { success: true, user: newUser[0]! };
     }
 
-    return { success: true, user: user[0] };
+    return { success: true, user: user[0]! };
   } catch (error) {
     console.error("Error getting current user:", error);
     return {

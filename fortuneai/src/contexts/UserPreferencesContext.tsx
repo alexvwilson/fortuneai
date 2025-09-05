@@ -1,19 +1,12 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import type { UserPreferences } from "@/drizzle/schema";
 
 interface UserPreferencesContextType {
   preferences: UserPreferences | null;
   setPreferences: (preferences: UserPreferences | null) => void;
   updatePreferences: (updates: Partial<UserPreferences>) => void;
-  isLoading: boolean;
 }
 
 const UserPreferencesContext = createContext<
@@ -32,7 +25,6 @@ export function UserPreferencesProvider({
   const [preferences, setPreferences] = useState<UserPreferences | null>(
     initialPreferences
   );
-  const [isLoading, setIsLoading] = useState(false);
 
   const updatePreferences = (updates: Partial<UserPreferences>) => {
     if (preferences) {
@@ -50,7 +42,6 @@ export function UserPreferencesProvider({
         preferences,
         setPreferences,
         updatePreferences,
-        isLoading,
       }}
     >
       {children}

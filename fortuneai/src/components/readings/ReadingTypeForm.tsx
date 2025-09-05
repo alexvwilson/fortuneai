@@ -40,7 +40,7 @@ export function ReadingTypeForm({ readingTypes }: ReadingTypeFormProps) {
     if (!acc[type.category]) {
       acc[type.category] = [];
     }
-    acc[type.category].push(type);
+    acc[type.category]!.push(type);
     return acc;
   }, {} as Record<string, ReadingTypeWithUserPreference[]>);
 

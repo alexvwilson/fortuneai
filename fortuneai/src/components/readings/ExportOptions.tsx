@@ -29,7 +29,7 @@ export function ExportOptions({ reading, onClose }: ExportOptionsProps) {
           result.error || `Failed to export as ${format.toUpperCase()}`
         );
       }
-    } catch (error) {
+    } catch {
       toast.error(`Failed to export as ${format.toUpperCase()}`);
     } finally {
       setIsExporting(null);

@@ -12,11 +12,7 @@ import { useState } from "react";
 import { exportUserData } from "@/app/actions/profile";
 import { toast } from "react-hot-toast";
 
-interface DataExportCardProps {
-  userId: string;
-}
-
-export default function DataExportCard({ userId }: DataExportCardProps) {
+export default function DataExportCard() {
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = async () => {
@@ -28,7 +24,7 @@ export default function DataExportCard({ userId }: DataExportCardProps) {
         // In a real implementation, this would trigger a file download
         window.open(result.downloadUrl, "_blank");
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to export data");
     } finally {
       setIsExporting(false);
