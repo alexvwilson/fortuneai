@@ -1,0 +1,7 @@
+# Ignore AI documentation and development files
+ai_docs/
+.cursor/
+
+# Ignore any other development artifacts
+*.log
+.DS_Store
