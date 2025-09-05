@@ -13,20 +13,16 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { updateProfile } from "@/app/actions/profile";
 import { toast } from "react-hot-toast";
+import { SerializedUserData } from "@/lib/types";
 
 interface ProfileCardProps {
-  user: {
-    id: string;
-    firstName: string | null;
-    lastName: string | null;
-    emailAddresses: Array<{ emailAddress: string }>;
-  };
+  userData: SerializedUserData;
 }
 
-export default function ProfileCard({ user }: ProfileCardProps) {
+export default function ProfileCard({ userData }: ProfileCardProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [firstName, setFirstName] = useState(user.firstName || "");
-  const [lastName, setLastName] = useState(user.lastName || "");
+  const [firstName, setFirstName] = useState(userData.firstName || "");
+  const [lastName, setLastName] = useState(userData.lastName || "");
 
   const handleSave = async () => {
     try {
@@ -57,7 +53,7 @@ export default function ProfileCard({ user }: ProfileCardProps) {
               </Label>
               <Input
                 id="email"
-                value={user.emailAddresses[0]?.emailAddress || ""}
+                value={userData.emailAddresses[0]?.emailAddress || ""}
                 disabled
                 className="bg-gray-800 border-gray-600 text-gray-300"
               />
@@ -105,13 +101,13 @@ export default function ProfileCard({ user }: ProfileCardProps) {
             <div>
               <Label className="text-gray-400">Email</Label>
               <p className="text-white">
-                {user.emailAddresses[0]?.emailAddress}
+                {userData.emailAddresses[0]?.emailAddress}
               </p>
             </div>
             <div>
               <Label className="text-gray-400">Name</Label>
               <p className="text-white">
-                {user.firstName} {user.lastName}
+                {userData.firstName} {userData.lastName}
               </p>
             </div>
             <Button
