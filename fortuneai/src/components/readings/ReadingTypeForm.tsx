@@ -78,7 +78,7 @@ export function ReadingTypeForm({ readingTypes }: ReadingTypeFormProps) {
                   {category}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {types.map((type) => (
+                  {(types as ReadingTypeWithUserPreference[]).map((type) => (
                     <button
                       key={type.id}
                       type="button"

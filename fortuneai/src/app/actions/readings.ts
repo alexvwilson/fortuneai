@@ -6,70 +6,9 @@ import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 import { randomUUID } from "crypto";
-import { createUser } from "@/app/actions/users";
 
-export async function createReading(data: {
-  readingTypeId: string;
-  prompt: string;
-  aiResponse: string;
-  title?: string;
-  tags?: string[];
-}): Promise<{
-  success: boolean;
-  readingId?: string | undefined;
-  error?: string;
-}> {
-  try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return {
-        success: false,
-        error: "Unauthorized - Please sign in to save readings",
-      };
-    }
-
-    // Ensure user exists in database
-    const userResult = await createUser();
-    if (!userResult.success) {
-      return {
-        success: false,
-        error: "Failed to create user profile",
-      };
-    }
-
-    const result = await db
-      .insert(readings)
-      .values({
-        userId,
-        readingTypeId: data.readingTypeId,
-        prompt: data.prompt,
-        aiResponse: data.aiResponse,
-        title: data.title,
-        tags: data.tags,
-      })
-      .returning({ id: readings.id });
-
-    revalidatePath("/readings");
-    return { success: true, readingId: result[0]?.id ?? undefined };
-  } catch (error) {
-    console.error("Error creating reading:", error);
-
-    // Enhanced error handling for database connection issues
-    if (error instanceof Error && error.message.includes("DATABASE_URL")) {
-      return {
-        success: false,
-        error:
-          "Database not configured. Please check your environment variables and see ENVIRONMENT_SETUP.md for instructions.",
-      };
-    }
-
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to save reading",
-    };
-  }
-}
+// Note: Reading creation is handled by the API route at /api/readings
+// This server action is kept for potential future use but is not currently used
 
 export async function updateReading(
   readingId: string,

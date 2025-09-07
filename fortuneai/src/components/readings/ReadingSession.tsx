@@ -24,6 +24,8 @@ export function ReadingSession({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const responseRef = useRef<HTMLDivElement>(null);
+  // Prevent duplicate fortune generation due to React Strict Mode or component re-mounting
+  const hasGenerated = useRef(false);
 
   const saveReading = useCallback(
     async (response: string): Promise<void> => {
@@ -57,6 +59,9 @@ export function ReadingSession({
   );
 
   const generateFortune = useCallback(async (): Promise<void> => {
+    if (hasGenerated.current) return;
+
+    hasGenerated.current = true;
     setIsGenerating(true);
     setAiResponse("");
 
@@ -113,7 +118,8 @@ export function ReadingSession({
 
   useEffect(() => {
     generateFortune();
-  }, [generateFortune]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

@@ -132,21 +132,21 @@ export const KeyboardNavigation = {
     const focusableElements = container.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[
-      focusableElements.length - 1
-    ] as HTMLElement;
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (!firstElement || !lastElement) return;
 
     if (event.key === KeyboardNavigation.TAB) {
       if (event.shiftKey) {
         if (document.activeElement === firstElement) {
           event.preventDefault();
-          lastElement.focus();
+          (lastElement as HTMLElement).focus();
         }
       } else {
         if (document.activeElement === lastElement) {
           event.preventDefault();
-          firstElement.focus();
+          (firstElement as HTMLElement).focus();
         }
       }
     }
@@ -237,7 +237,9 @@ export const FocusManagement = {
 
   // Save current focus
   saveFocus: () => {
-    FocusManagement.lastFocusedElement = document.activeElement as HTMLElement;
+    if (document.activeElement instanceof HTMLElement) {
+      FocusManagement.lastFocusedElement = document.activeElement;
+    }
   },
 
   // Restore focus
@@ -251,8 +253,9 @@ export const FocusManagement = {
   focusFirst: (container: HTMLElement) => {
     const focusable = container.querySelector(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    ) as HTMLElement;
-    if (focusable) {
+    );
+
+    if (focusable instanceof HTMLElement) {
       focusable.focus();
     }
   },

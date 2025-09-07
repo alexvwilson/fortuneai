@@ -22,6 +22,7 @@ export interface ErrorContext {
   data?: unknown;
   url?: string;
   userAgent?: string;
+  [key: string]: unknown;
 }
 
 // Error codes
@@ -159,7 +160,9 @@ export class AppErrorClass extends Error implements AppError {
     this.timestamp = new Date();
     if (context?.userId) this.userId = context.userId;
     if (context?.sessionId) this.sessionId = context.sessionId;
-    if (context) this.context = context as Record<string, unknown>;
+    if (context && typeof context === "object") {
+      this.context = context;
+    }
     this.severity = severity;
     this.category = category;
 
@@ -309,7 +312,7 @@ export class ErrorHandler {
         message: error.message || "An unknown error occurred",
         timestamp: new Date(),
         ...(error.stack && { stack: error.stack }),
-        ...(context && { context: context as Record<string, unknown> }),
+        ...(context && typeof context === "object" && { context }),
       };
     }
 

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { readings, readingTypes } from "@/drizzle/schema";
-import { eq, and, desc, count, sql } from "drizzle-orm";
+import { eq, and, desc, asc, count, sql } from "drizzle-orm";
 import type { Reading } from "@/drizzle/schema";
 
 export type ReadingWithType = {
@@ -140,11 +140,24 @@ export async function getReadingStats(userId: string): Promise<ReadingStats> {
   // Calculate reading frequency based on actual time span
   let readingFrequency = 0;
   if (totalReadings > 0 && recentActivity) {
-    const daysSinceFirstReading = Math.max(
-      1,
-      Math.ceil((Date.now() - recentActivity.getTime()) / (1000 * 60 * 60 * 24))
-    );
-    readingFrequency = totalReadings / (daysSinceFirstReading / 7); // Readings per week
+    // Get the first reading date to calculate the actual time span
+    const firstReadingResult = await db
+      .select({ createdAt: readings.createdAt })
+      .from(readings)
+      .where(eq(readings.userId, userId))
+      .orderBy(asc(readings.createdAt))
+      .limit(1);
+
+    const firstReadingDate = firstReadingResult[0]?.createdAt;
+    if (firstReadingDate) {
+      const daysSinceFirstReading = Math.max(
+        1,
+        Math.ceil(
+          (Date.now() - firstReadingDate.getTime()) / (1000 * 60 * 60 * 24)
+        )
+      );
+      readingFrequency = totalReadings / (daysSinceFirstReading / 7); // Readings per week
+    }
   }
 
   return {
