@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,15 @@ export function ReadingTypeForm({ readingTypes }: ReadingTypeFormProps) {
   const [userQuestion, setUserQuestion] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Pre-select reading type if provided in URL
+  useEffect(() => {
+    const typeParam = searchParams.get("type");
+    if (typeParam && readingTypes.some((type) => type.id === typeParam)) {
+      setSelectedType(typeParam);
+    }
+  }, [searchParams, readingTypes]);
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();

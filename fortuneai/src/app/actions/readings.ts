@@ -6,6 +6,7 @@ import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 import { randomUUID } from "crypto";
+import { createUser } from "@/app/actions/users";
 
 export async function createReading(data: {
   readingTypeId: string;
@@ -20,8 +21,21 @@ export async function createReading(data: {
 }> {
   try {
     const { userId } = await auth();
+
     if (!userId) {
-      return { success: false, error: "Unauthorized" };
+      return {
+        success: false,
+        error: "Unauthorized - Please sign in to save readings",
+      };
+    }
+
+    // Ensure user exists in database
+    const userResult = await createUser();
+    if (!userResult.success) {
+      return {
+        success: false,
+        error: "Failed to create user profile",
+      };
     }
 
     const result = await db
@@ -40,7 +54,20 @@ export async function createReading(data: {
     return { success: true, readingId: result[0]?.id ?? undefined };
   } catch (error) {
     console.error("Error creating reading:", error);
-    return { success: false, error: "Failed to save reading" };
+
+    // Enhanced error handling for database connection issues
+    if (error instanceof Error && error.message.includes("DATABASE_URL")) {
+      return {
+        success: false,
+        error:
+          "Database not configured. Please check your environment variables and see ENVIRONMENT_SETUP.md for instructions.",
+      };
+    }
+
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to save reading",
+    };
   }
 }
 
@@ -70,6 +97,16 @@ export async function updateReading(
     return { success: true };
   } catch (error) {
     console.error("Error updating reading:", error);
+
+    // Enhanced error handling for database connection issues
+    if (error instanceof Error && error.message.includes("DATABASE_URL")) {
+      return {
+        success: false,
+        error:
+          "Database not configured. Please check your environment variables and see ENVIRONMENT_SETUP.md for instructions.",
+      };
+    }
+
     return { success: false, error: "Failed to update reading" };
   }
 }
@@ -91,6 +128,16 @@ export async function deleteReading(
     return { success: true };
   } catch (error) {
     console.error("Error deleting reading:", error);
+
+    // Enhanced error handling for database connection issues
+    if (error instanceof Error && error.message.includes("DATABASE_URL")) {
+      return {
+        success: false,
+        error:
+          "Database not configured. Please check your environment variables and see ENVIRONMENT_SETUP.md for instructions.",
+      };
+    }
+
     return { success: false, error: "Failed to delete reading" };
   }
 }

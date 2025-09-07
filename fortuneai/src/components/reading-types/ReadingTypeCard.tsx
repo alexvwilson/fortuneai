@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, HeartOff } from "lucide-react";
@@ -25,6 +26,7 @@ export function ReadingTypeCard({
 }: ReadingTypeCardProps) {
   const [isFavorite, setIsFavorite] = useState(readingType.isUserFavorite);
   const [isUpdating, setIsUpdating] = useState(false);
+  const router = useRouter();
 
   const handleFavoriteToggle = async () => {
     try {
@@ -43,6 +45,17 @@ export function ReadingTypeCard({
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  const handleStartReading = () => {
+    // Navigate to the reading selection page where user can enter their question
+    router.push(`/new-reading/selection?type=${readingType.id}`);
+  };
+
+  const handleLearnMore = () => {
+    // For now, just show a toast with more info
+    // In the future, this could navigate to a detailed page
+    toast.info(`${readingType.name}: ${readingType.description}`);
   };
 
   return (
@@ -83,6 +96,7 @@ export function ReadingTypeCard({
           <Button
             variant="outline"
             size="sm"
+            onClick={handleStartReading}
             className="border-purple-500 text-purple-400 hover:bg-purple-500/10 text-xs sm:text-sm"
           >
             Start Reading
@@ -90,6 +104,7 @@ export function ReadingTypeCard({
           <Button
             variant="ghost"
             size="sm"
+            onClick={handleLearnMore}
             className="text-gray-400 hover:text-purple-400 text-xs sm:text-sm"
           >
             Learn More

@@ -55,6 +55,9 @@ export async function createUser(): Promise<CreateUserResult> {
       readingHistoryEnabled: "true",
       notificationsEnabled: "true",
       theme: "dark",
+      readingFrequencyPreference: "weekly",
+      privacyLevel: "private",
+      dataSharingEnabled: "false",
     });
 
     revalidatePath("/dashboard");

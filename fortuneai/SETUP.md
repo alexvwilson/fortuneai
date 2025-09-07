@@ -9,8 +9,8 @@ Before running the application, you need to set up your environment variables. C
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
 CLERK_SECRET_KEY=sk_test_your_secret_here
 
-# Database
-DATABASE_URL=postgresql://username:password@localhost:5432/fortunai_db
+# Database (Neon.tech PostgreSQL)
+DATABASE_URL=postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require
 
 # OpenAI (for future fortune telling AI)
 OPENAI_API_KEY=sk-your_openai_key_here
@@ -26,9 +26,18 @@ OPENAI_API_KEY=sk-your_openai_key_here
 
 ### Database Setup
 
-1. Install PostgreSQL on your system
-2. Create a new database: `createdb fortunai_db`
-3. Update the DATABASE_URL with your credentials
+1. **Create a Neon.tech Account**
+
+   - Go to [neon.tech](https://neon.tech) and create a free account
+   - Create a new project and database
+
+2. **Get Your Connection String**
+
+   - Copy the connection string from your Neon.tech dashboard
+   - It will look like: `postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require`
+
+3. **Update Environment Variables**
+   - Replace the DATABASE_URL in your `.env.local` file with the Neon.tech connection string
 
 ### OpenAI (Optional for now)
 
@@ -60,5 +69,5 @@ npm run db:studio
 ## Troubleshooting
 
 - **Port 3000 already in use**: Change the port in package.json or kill the existing process
-- **Database connection failed**: Check your DATABASE_URL and ensure PostgreSQL is running
+- **Database connection failed**: Check your DATABASE_URL and ensure it's properly configured for Neon.tech
 - **Clerk errors**: Verify your Clerk keys are correct and the application is properly configured

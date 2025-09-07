@@ -104,3 +104,80 @@ export async function getUserFavoriteTypes(
     };
   }
 }
+
+export type SeedReadingTypesResult =
+  | { success: true; message: string }
+  | { success: false; error: string };
+
+export async function seedReadingTypes(): Promise<SeedReadingTypesResult> {
+  try {
+    // Check if reading types already exist
+    const existingTypes = await db.select().from(readingTypes).limit(1);
+    if (existingTypes.length > 0) {
+      return { success: true, message: "Reading types already exist" };
+    }
+
+    // Seed reading types data
+    const readingTypesData = [
+      {
+        name: "Tarot Card Reading",
+        description:
+          "Discover your future through the ancient art of tarot card interpretation",
+        icon: "🃏",
+        category: "divination",
+        isActive: true,
+      },
+      {
+        name: "Crystal Ball Reading",
+        description:
+          "Peer into the mystical realm with crystal ball divination",
+        icon: "🔮",
+        category: "divination",
+        isActive: true,
+      },
+      {
+        name: "Palm Reading",
+        description: "Unlock the secrets written in the lines of your palm",
+        icon: "✋",
+        category: "divination",
+        isActive: true,
+      },
+      {
+        name: "Astrology Reading",
+        description: "Explore your destiny through the alignment of the stars",
+        icon: "⭐",
+        category: "astrology",
+        isActive: true,
+      },
+      {
+        name: "Numerology Reading",
+        description:
+          "Decode the hidden meanings in numbers and their vibrations",
+        icon: "🔢",
+        category: "divination",
+        isActive: true,
+      },
+      {
+        name: "Dream Interpretation",
+        description: "Unravel the messages hidden within your dreams",
+        icon: "💭",
+        category: "interpretation",
+        isActive: true,
+      },
+    ];
+
+    await db.insert(readingTypes).values(readingTypesData);
+
+    revalidatePath("/types");
+    revalidatePath("/dashboard");
+
+    return { success: true, message: "Reading types seeded successfully" };
+  } catch (error) {
+    console.error("Error seeding reading types:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to seed reading types",
+    };
+  }
+}

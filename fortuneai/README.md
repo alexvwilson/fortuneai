@@ -26,7 +26,7 @@ A mystical fortune telling application powered by artificial intelligence, built
 
 - Node.js 18+
 - npm or yarn
-- PostgreSQL database
+- Neon.tech PostgreSQL database (cloud-hosted)
 - Clerk account for authentication
 
 ### Installation
@@ -52,8 +52,8 @@ A mystical fortune telling application powered by artificial intelligence, built
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
    CLERK_SECRET_KEY=sk_test_your_secret_here
 
-   # Database
-   DATABASE_URL=postgresql://username:password@localhost:5432/fortunai_db
+   # Database (Neon.tech PostgreSQL)
+   DATABASE_URL=postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require
 
    # OpenAI (for future fortune telling AI)
    OPENAI_API_KEY=sk-your_openai_key_here

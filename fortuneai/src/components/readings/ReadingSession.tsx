@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { createReading } from "@/app/actions/readings";
+// Removed server action import - using API route instead
 import { toast } from "sonner";
 
 interface ReadingSessionProps {
@@ -28,12 +28,20 @@ export function ReadingSession({
   const saveReading = useCallback(
     async (response: string): Promise<void> => {
       try {
-        const result = await createReading({
-          readingTypeId: readingType.id,
-          prompt: userQuestion,
-          aiResponse: response,
-          title: `${readingType.name} Reading`,
+        const response_data = await fetch("/api/readings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            readingTypeId: readingType.id,
+            prompt: userQuestion,
+            aiResponse: response,
+            title: `${readingType.name} Reading`,
+          }),
         });
+
+        const result = await response_data.json();
 
         if (result.success) {
           toast.success("Reading saved to your history!");

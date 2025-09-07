@@ -53,7 +53,7 @@ fortuneai/
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL database
+- Neon.tech PostgreSQL database (cloud-hosted)
 - OpenAI API key
 - Clerk account for authentication
 
@@ -75,8 +75,8 @@ fortuneai/
    Required environment variables:
 
    ```env
-   # Database
-   DATABASE_URL="postgresql://..."
+   # Database (Neon.tech PostgreSQL)
+   DATABASE_URL="postgresql://username:password@ep-xxx-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require"
 
    # Clerk Authentication
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_..."
@@ -280,7 +280,7 @@ The application follows WCAG AA guidelines:
 
 ### Common Issues
 
-1. **Database connection errors**: Check DATABASE_URL and ensure PostgreSQL is running
+1. **Database connection errors**: Check DATABASE_URL and ensure it's properly configured for Neon.tech
 2. **Authentication issues**: Verify Clerk keys and configuration
 3. **Build errors**: Check TypeScript types and imports
 4. **Performance issues**: Review database queries and component optimization
